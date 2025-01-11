@@ -21,6 +21,8 @@ class ScraperSpider(scrapy.Spider):
 
     def parse(self, response):
 
+        #self.log(f'RESPONSE: {response.body}')
+
         phone_name = response.css("h1.title-model::text").get()  
         offers = response.css("div.store-offer") 
 
