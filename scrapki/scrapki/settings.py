@@ -17,10 +17,23 @@ NEWSPIDER_MODULE = "scrapki.spiders"
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': 550,
-    #'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
-    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-    #'scratest.middlewares.UARotatorMiddleware': 400,
+    'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None,
+    'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
 }
+
+DOWNLOADER_MIDDLEWARES.update({
+    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
+    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
+})
+
+DEFAULT_REQUEST_HEADERS = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "es",
+    "Referer": "https://www.google.com/",
+    "Upgrade-Insecure-Requests": "1",
+    "Accept-Encoding": "gzip, deflate, br",
+}
+
 
 COOKIES_ENABLED = True
 
