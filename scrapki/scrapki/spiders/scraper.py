@@ -1,4 +1,13 @@
-import scrapy
+import scrapy, random, requests, os
+from scrapy.exceptions import IgnoreRequest
+
+def load_user_agents(file_path):
+    with open(file_path, 'r') as f:
+        return [line.strip() for line in f if line.strip()]
+    
+def load_proxies(file_path):
+    with open(file_path, 'r') as f:
+        return [line.strip() for line in f if line.strip()]
 
 class ScraperSpider(scrapy.Spider):
     name = "scraper"
@@ -12,17 +21,30 @@ class ScraperSpider(scrapy.Spider):
         "realme-gt-6t",
         "pixel-8",
         "pixel-9",
+        "nord-4"
     ]
+
+    def __init__(self, name = None, **kwargs):
+        super().__init__(name, **kwargs)
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        user_agents_path = os.path.join(base_dir, '../resources/user-agents.txt')
+        proxies_path = os.path.join(base_dir, '../resources/proxies.txt')
+        self.user_agents = load_user_agents(user_agents_path)
+        self.proxies = load_proxies(proxies_path)
 
     def start_requests(self):
         base_url = "https://www.kimovil.com/es/donde-comprar-"
+        headers = {'User-Agent': random.choice(self.user_agents)}
+        meta = {'proxy': random.choice(self.proxies)}
         for model in self.modelos:
-            yield scrapy.Request(url=f"{base_url}{model}", callback=self.parse)
+            yield scrapy.Request(
+                url=f"{base_url}{model}",
+                callback=self.parse,
+                headers=headers,
+                meta=meta
+            )
 
     def parse(self, response):
-
-
-        #self.log(f'RESPONSE: {response.body}')
 
         phone_name = response.css("h1.title-model::text").get()  
         offers = response.css("div.store-offer") 
